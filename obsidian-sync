@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 
 ###############################################
+#
 # Title:       obsidian-sync
 # Author:      Arne Van Looveren
 # Description: Syncs obsidian to git repository
-#              Make sure to set the VAULT_PATH variable to your Obsidian vault path in your environment.
+# Parameters:  $1 - Commit message (optional, defaults to "notes")
+# Usage:       obsidian-sync [commit_message]
 #
-# Usage:       obsidian-sync
+###############################################
+#
+# Note:
+# This script needs AVL_SCRIPTS_OBSIDIAN_VAULT_PATH to be set.
+#
 ###############################################
 
 DEFAULT_COMMIT_MESSAGE=notes
