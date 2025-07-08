@@ -4,11 +4,11 @@
 # Title:       obsidian-sync
 # Author:      Arne Van Looveren
 # Description: Syncs obsidian to git repository
+#              Make sure to set the VAULT_PATH variable to your Obsidian vault path in your environment.
 #
 # Usage:       obsidian-sync
 ###############################################
 
-VAULT_PATH=""
 DEFAULT_COMMIT_MESSAGE=notes
 
 # Check if git is installed
