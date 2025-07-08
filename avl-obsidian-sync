@@ -30,7 +30,7 @@ if [ -z "$VAULT_PATH" ]; then
 fi
 
 # Change to the vault directory
-cd "$VAULT_PATH"
+cd "$VAULT_PATH" || exit 1
 
 # Check if the directory is a git repository
 if [ ! -d ".git" ]; then
@@ -45,9 +45,8 @@ if [ -z "$(git status --porcelain)" ]; then
 fi
 
 git add . &> /dev/null
-git commit -m "${1:-$DEFAULT_COMMIT_MESSAGE}" > /dev/null
 
-if [ $? -ne 0 ]; then
+if [[ $(git commit -m "${1:-$DEFAULT_COMMIT_MESSAGE}" &> /dev/null) -ne 0 ]]; then
     echo "Failed to commit changes. Please check your git configuration."
     exit 1
 fi
@@ -55,8 +54,8 @@ fi
 echo "Created commit with message: ${1:-$DEFAULT_COMMIT_MESSAGE}"
 
 # Push changes to remote repository
-git push &> /dev/null
-if [ $? -ne 0 ]; then
+
+if [[ $(git push &> /dev/null) -ne 0 ]]; then
     echo "Failed to push changes to remote repository. Please check your network connection and git configuration."
     exit 1
 fi
