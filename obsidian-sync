@@ -8,7 +8,7 @@
 # Usage:       obsidian-sync
 ###############################################
 
-VAULT_PATH="/mnt/c/Users/vanloar/Documents/Organized Chaos"
+VAULT_PATH=""
 DEFAULT_COMMIT_MESSAGE=notes
 
 # Check if git is installed
