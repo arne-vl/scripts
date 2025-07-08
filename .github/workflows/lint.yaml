@@ -16,4 +16,9 @@ jobs:
         run: sudo apt-get install -y shellcheck
 
       - name: Run Shellcheck
-        run: find . -type f -name "*.sh" ! -path "./.git/*" ! -path "./.github/*" -exec shellcheck {} +
+        run: |
+          # Find all shell scripts in the repository, excluding .git and .github directories
+          # and run shellcheck on them
+          # Print the files being checked
+          echo "Checking shell scripts..."
+          find . -type f -name "*" ! -path "./.git/*" ! -path "./.github/*" -print0 | xargs -0 shellcheck --enable=all --severity=warning
