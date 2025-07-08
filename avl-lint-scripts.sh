@@ -9,6 +9,11 @@
 #
 ###############################################
 
+if ! command -v shellcheck &> /dev/null; then
+    echo "shellcheck could not be found. Please install it to run this script."
+    exit 1
+fi
+
 FAILURE=0
 
 while read -r file; do
