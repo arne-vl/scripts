@@ -52,6 +52,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "Created commit with message: ${1:-$DEFAULT_COMMIT_MESSAGE}"
+
 # Push changes to remote repository
 git push > /dev/null
 if [ $? -ne 0 ]; then
