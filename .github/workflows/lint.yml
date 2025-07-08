@@ -18,9 +18,5 @@ jobs:
 
       - name: Run Shellcheck
         run: |
-          echo "Running shellcheck..."
-          find . -type f ! -path "./.git/*" ! -path "./.github/*" -print0 \
-          | while IFS= read -r -d '' file; do
-              echo "Checking: $file"
-              shellcheck --enable=all --severity=warning "$file"
-            done
+          chmod +x ./avl-lint-scripts.sh
+          ./avl-lint-scripts.sh
