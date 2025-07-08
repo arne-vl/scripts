@@ -54,7 +54,6 @@ fi
 echo "Created commit with message: ${1:-$DEFAULT_COMMIT_MESSAGE}"
 
 # Push changes to remote repository
-
 if [[ $(git push &> /dev/null) -ne 0 ]]; then
     echo "Failed to push changes to remote repository. Please check your network connection and git configuration."
     exit 1
