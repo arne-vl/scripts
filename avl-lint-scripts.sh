@@ -17,13 +17,14 @@ while read -r file; do
         echo "Linting failed for $file"
         FAILURE=1
     fi
-    echo
 done < <(find . -type f ! -path "./.git/*" ! -path "./.github/*")
 
 if [[ $FAILURE -ne 0 ]]; then
+    echo
     echo "Linting failed for one or more files."
     exit 1
 else
+    echo
     echo "All files passed linting."
     exit 0
 fi

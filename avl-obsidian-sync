@@ -15,7 +15,6 @@
 #
 ###############################################
 
-LOCATION=FOUT
 DEFAULT_COMMIT_MESSAGE=notes
 
 # Check if git is installed
