@@ -44,7 +44,7 @@ if [ -z "$(git status --porcelain)" ]; then
     exit 0
 fi
 
-git add . > /dev/null
+git add . &> /dev/null
 git commit -m "${1:-$DEFAULT_COMMIT_MESSAGE}" > /dev/null
 
 if [ $? -ne 0 ]; then
@@ -55,7 +55,7 @@ fi
 echo "Created commit with message: ${1:-$DEFAULT_COMMIT_MESSAGE}"
 
 # Push changes to remote repository
-git push > /dev/null
+git push &> /dev/null
 if [ $? -ne 0 ]; then
     echo "Failed to push changes to remote repository. Please check your network connection and git configuration."
     exit 1
