@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+###############################################
+# Title:       obsidian-sync
+# Author:      Arne Van Looveren
+# Description: Syncs obsidian to git repository
+#
+# Usage:       obsidian-sync
+###############################################
+
+VAULT_PATH="/mnt/c/Users/vanloar/Documents/Organized Chaos"
+DEFAULT_COMMIT_MESSAGE=notes
+
+# Check if git is installed
+if ! command -v git &> /dev/null; then
+    echo "git is not installed. Please install git to use this script."
+    exit 1
+fi
+
+# Check if vault path is set
+if [ -z "$VAULT_PATH" ]; then
+    echo "VAULT_PATH is not set. Please set the VAULT_PATH variable to your Obsidian vault path."
+    exit 1
+fi
+
+# Change to the vault directory
+cd "$VAULT_PATH"
+
+# Check if the directory is a git repository
+if [ ! -d ".git" ]; then
+    echo "This directory is not a git repository. Initializing git repository..."
+    exit 1
+fi
+
+# Create commit
+if [ -z "$(git status --porcelain)" ]; then
+    echo "No changes to commit."
+    exit 0
+fi
+
+git add . > /dev/null
+git commit -m "${1:-$DEFAULT_COMMIT_MESSAGE}" > /dev/null
+
+if [ $? -ne 0 ]; then
+    echo "Failed to commit changes. Please check your git configuration."
+    exit 1
+fi
+
+# Push changes to remote repository
+git push > /dev/null
+if [ $? -ne 0 ]; then
+    echo "Failed to push changes to remote repository. Please check your network connection and git configuration."
+    exit 1
+fi
+
+echo "Obsidian vault synced successfully to git repository."
