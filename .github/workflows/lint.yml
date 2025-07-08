@@ -1,0 +1,26 @@
+name: "Linting"
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Run Shellcheck
+        run: |
+          echo "Running shellcheck..."
+          find . -type f ! -path "./.git/*" ! -path "./.github/*" -print0 \
+          | while IFS= read -r -d '' file; do
+              echo "Checking: $file"
+              shellcheck --enable=all --severity=warning "$file"
+            done
