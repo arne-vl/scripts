@@ -24,13 +24,13 @@ if ! command -v git &> /dev/null; then
 fi
 
 # Check if vault path is set
-if [ -z "$VAULT_PATH" ]; then
-    echo "VAULT_PATH is not set. Please set the VAULT_PATH variable to your Obsidian vault path."
+if [ -z "$AVL_SCRIPTS_OBSIDIAN_VAULT_PATH" ]; then
+    echo "AVL_SCRIPTS_OBSIDIAN_VAULT_PATH is not set. Please set the AVL_SCRIPTS_OBSIDIAN_VAULT_PATH variable to your Obsidian vault path."
     exit 1
 fi
 
 # Change to the vault directory
-cd "$VAULT_PATH" || exit 1
+cd "$AVL_SCRIPTS_OBSIDIAN_VAULT_PATH" || exit 1
 
 # Check if the directory is a git repository
 if [ ! -d ".git" ]; then
