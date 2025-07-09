@@ -14,6 +14,9 @@ if ! command -v shellcheck &> /dev/null; then
     exit 1
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
+
 FAILURE=0
 
 while read -r file; do
