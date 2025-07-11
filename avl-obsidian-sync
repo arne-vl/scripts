@@ -19,22 +19,35 @@ DEFAULT_COMMIT_MESSAGE=notes
 
 # Check if git is installed
 if ! command -v git &> /dev/null; then
-    echo "git is not installed. Please install git to use this script."
+    echo "Error: git is not installed. Please install git to use this script."
     exit 1
 fi
 
 # Check if vault path is set
 if [ -z "$AVL_SCRIPTS_OBSIDIAN_VAULT_PATH" ]; then
-    echo "AVL_SCRIPTS_OBSIDIAN_VAULT_PATH is not set. Please set the AVL_SCRIPTS_OBSIDIAN_VAULT_PATH variable to your Obsidian vault path."
+    echo "Error: AVL_SCRIPTS_OBSIDIAN_VAULT_PATH is not set. Please set the AVL_SCRIPTS_OBSIDIAN_VAULT_PATH variable to your Obsidian vault path."
     exit 1
 fi
 
 # Change to the vault directory
-cd "$AVL_SCRIPTS_OBSIDIAN_VAULT_PATH" || exit 1
+cd "$AVL_SCRIPTS_OBSIDIAN_VAULT_PATH" || {
+  echo "Error: Could not navigate to $AVL_SCRIPTS_OBSIDIAN_VAULT_PATH."
+  exit 1
+}
 
 # Check if the directory is a git repository
 if [ ! -d ".git" ]; then
-    echo "This directory is not a git repository. Initializing git repository..."
+    echo "Error: this directory is not a git repository."
+    exit 1
+fi
+
+# Fetch and pull latest changes from remote repository
+if [[ $(git fetch --all &> /dev/null) -ne 0 ]]; then
+    echo "Error: failed to fetch changes from remote repository. Please check your network connection and git configuration."
+    exit 1
+fi
+if [[ $(git pull &> /dev/null) -ne 0 ]]; then
+    echo "Error: failed to pull changes from remote repository. Please check your network connection and git configuration."
     exit 1
 fi
 
@@ -47,7 +60,7 @@ fi
 git add . &> /dev/null
 
 if [[ $(git commit -m "${1:-$DEFAULT_COMMIT_MESSAGE}" &> /dev/null) -ne 0 ]]; then
-    echo "Failed to commit changes. Please check your git configuration."
+    echo "Error: failed to commit changes. Please check your git configuration."
     exit 1
 fi
 
@@ -55,7 +68,7 @@ echo "Created commit with message: ${1:-$DEFAULT_COMMIT_MESSAGE}"
 
 # Push changes to remote repository
 if [[ $(git push &> /dev/null) -ne 0 ]]; then
-    echo "Failed to push changes to remote repository. Please check your network connection and git configuration."
+    echo " Error: failed to push changes to remote repository. Please check your network connection and git configuration."
     exit 1
 fi
 
