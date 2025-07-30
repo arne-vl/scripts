@@ -17,52 +17,106 @@
 #
 ###############################################
 
-if ! command -v tmux &> /dev/null; then
-    echo "tmux could not be found. Please install it to run this script."
-    exit 1
-fi
-
-if ! command -v fzf &> /dev/null; then
-    echo "fzf could not be found. Please install it to run this script."
-    exit 1
-fi
-
-list_sessions() {
-    tmux list-sessions 2>/dev/null | cut -d: -f1
+# Check dependencies: tmux and fzf
+check_dependencies() {
+    for cmd in tmux fzf; do
+        if ! command -v "$cmd" &> /dev/null; then
+            echo "$cmd could not be found. Please install it to run this script." >&2
+            exit 1
+        fi
+    done
 }
 
-if [[ "$1" == "list" ]]; then
-    if ! list_sessions | tee /dev/stderr | grep -q '.'; then
-      echo "No tmux sessions found." >&2
+# Return list of tmux sessions excluding current session (if inside tmux)
+list_sessions() {
+    local CURRENT_SESSION=""
+    if [ -n "$TMUX" ]; then
+        CURRENT_SESSION=$(tmux display-message -p '#S' 2>/dev/null)
     fi
-    exit 0
-fi
 
-if [[ "$1" == "kill" ]]; then
-    SESSION_NAME="$2"
-    if [[ -z "$SESSION_NAME" ]]; then
+    tmux list-sessions 2>/dev/null | cut -d: -f1 | grep -vx "$CURRENT_SESSION"
+}
+
+# Print all sessions or a message if none exist
+list_command() {
+    local SESSIONS
+    SESSIONS=$(tmux list-sessions 2>/dev/null | cut -d: -f1)
+    if [ -z "$SESSIONS" ]; then
+        echo "No tmux sessions found." >&2
+    else
+        echo "$SESSIONS"
+    fi
+}
+
+# Kill a session by name
+kill_session() {
+    local SESSION_NAME="$1"
+    if [ -z "$SESSION_NAME" ]; then
         echo "Usage: $0 kill <session-name>" >&2
         exit 1
     fi
 
-    if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+    if tmux list-sessions 2>/dev/null | cut -d: -f1 | grep -qx "$SESSION_NAME"; then
         tmux kill-session -t "$SESSION_NAME"
-        echo "Killed session '$SESSION_NAME'"
+        echo "Killed session '$SESSION_NAME'."
     else
         echo "Session '$SESSION_NAME' does not exist." >&2
+        exit 1
     fi
-    exit 0
-fi
+}
 
-if [[ -n "$1" ]]; then
+# Attach or create (and switch) session as needed
+attach_or_create_session() {
+    local SESSION_NAME="$1"
+
+    # Check if session exists
+    if tmux list-sessions 2>/dev/null | cut -d: -f1 | grep -qx "$SESSION_NAME"; then
+        if [ -n "$TMUX" ]; then
+            # Inside tmux: switch client to existing session
+            tmux switch-client -t "$SESSION_NAME"
+        else
+            # Outside tmux: attach to existing session
+            tmux attach-session -t "$SESSION_NAME"
+        fi
+    else
+        if [ -n "$TMUX" ]; then
+            # Inside tmux: create detached session and switch to it (no nesting)
+            tmux new-session -d -s "$SESSION_NAME"
+            tmux switch-client -t "$SESSION_NAME"
+        else
+            # Outside tmux: create new session and attach
+            tmux new-session -s "$SESSION_NAME"
+        fi
+    fi
+}
+
+# Main script logic
+
+check_dependencies
+
+case "$1" in
+    list|l)
+        list_command
+        exit 0
+        ;;
+    kill|k)
+        kill_session "$2"
+        exit 0
+        ;;
+    *)
+        ;;
+esac
+
+if [ -n "$1" ]; then
     SESSION_NAME="$1"
 else
-    SESSION_NAME=$(list_sessions | fzf --height=40% --reverse --border-label=' tmux manager ') || exit 0
+    SESSIONS=$(list_sessions)
+    if [ -z "$SESSIONS" ]; then
+        echo "No tmux sessions found." >&2
+        exit 0
+    fi
+    SESSION_NAME=$(echo "$SESSIONS" | fzf --height=40% --border-label=' tmux manager ') || exit 0
 fi
 
-if tmux list-sessions 2>/dev/null | cut -d: -f1 | grep -qx "$SESSION_NAME"; then
-    tmux attach-session -t "$SESSION_NAME"
-else
-    tmux new-session -s "$SESSION_NAME"
-fi
+attach_or_create_session "$SESSION_NAME"
 
