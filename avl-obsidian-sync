@@ -5,7 +5,7 @@
 # Title:       avl-obsidian-sync
 # Author:      Arne Van Looveren
 # Description: Syncs obsidian to git repository
-# Parameters:  $1 - Commit message (optional, defaults to "notes")
+#
 # Usage:       avl-obsidian-sync [commit_message]
 #
 ###############################################
