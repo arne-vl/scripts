@@ -5,6 +5,7 @@
 # Title:       avl-lint-scripts.sh
 # Author:      Arne Van Looveren
 # Description: Linting script for scripts repository
+#
 # Usage:       avl-lint-scripts.sh
 #
 ###############################################
