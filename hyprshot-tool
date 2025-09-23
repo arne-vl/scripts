@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+###############################################
+#
+# Title:       hyprshot-tool
+# Author:      Arne Van Looveren
+# Description: Wofi tool for hyprshot options
+#
+# Usage:       hyprshot-tool
+#
+###############################################
+#
+# Note:
+# This script needs wofi and hyprshot to be installed.
+#
+###############################################
+
+if ! command -v wofi &> /dev/null; then
+    echo "Error: wofi is not installed. Please install wofi to use this script."
+    exit 1
+fi
+
+if ! command -v hyprshot &> /dev/null; then
+    echo "Error: hyprshot is not installed. Please install hyprshot to use this script."
+    exit 1
+fi
+
+options="Selection\nWindow\nMonitor"
+
+selection=$(echo -e "$options" | wofi --width 150 --height 150 --dmenu --sort-order=none --hide-search)
+sleep 0.1
+
+case "$selection" in
+    Selection)
+        hyprshot -m region
+        ;;
+    Window)
+        hyprshot -m window
+        ;;
+    Monitor)
+        hyprshot -m output
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+
