@@ -115,7 +115,7 @@ else
         echo "No tmux sessions found." >&2
         exit 0
     fi
-    SESSION_NAME=$(echo "$SESSIONS" | fzf --height=40% --border-label=' tmux manager ') || exit 0
+    SESSION_NAME=$(echo "$SESSIONS" | fzf --height=40% --border-label=' tmux manager ' --preview='tmux list-windows -t {}') || exit 0
 fi
 
 attach_or_create_session "$SESSION_NAME"
